@@ -10,30 +10,34 @@ response <- data.frame(
 
 library(tidyr)
 
-df <- gather(...)
+df <- gather(response, key='factor',value='response',-trial)
 
 counts <- data.frame(
-  site = ...,
-  species = ...,
+  site = rep(1:3,each=2),
+  species = rep(c('lynx','hare'),3),
   n = c(2, 341, 7, 42, 0, 289)
 )
 
-counts_spread <- ...(counts,
-			...,
-			...)
+counts_spread <- spread(counts,
+			key=species,
+			value=n)
 
 ## Exercise 1
 
-...
-
+#getting rid of 0 lynxline , then putting it back in 
+df2<-counts[-5, ]
+spread(df2,key=species,value=n)
+spread(counts[-5, ], key = species, value = n, fill = 0)
+spread(counts, key = species, value = n, fill = 0)
 ## Read comma-separated-value (CSV) files
 
 animals <- ...
+#species id didnt read in right to this data 
+animals <- read.csv('data/animals.csv',na.strings = "")
 
-animals <- read.csv('data/animals.csv', )
 
 library(dplyr)
-library(...)
+
 
 con <- ...(..., host = 'localhost', dbname = 'portal')
 animals_db <- ...
@@ -43,19 +47,30 @@ dbDisconnect(...)
 ## Subsetting and sorting
 
 library(dplyr)
-animals_1990_winter <- filter(...,
-                              ...,
-                              ...)
+#filtering to only year 1990
+#double equal means HAS TO
 
-animals_1990_winter <- select(animals_1990_winter, ...)
+animals_1990_winter <- filter(animals,
+                              year==1990,
+                              month %in% 1:3)
+#we are going to change this data set even further and overwrite it to
+#get rid of year column
+animals_1990_winter <- select(animals_1990_winter, -year)
 
-sorted <- ...(animals_1990_winter,
-              ...)
+#what if we wanted to re-arrange our data frame to make it easier to 
+#look at 
+#using the helper funciton desc for descending 
 
+sorted <- arrange(animals_1990_winter,
+              desc(species_id),weight)
+#to see it, type 
+View(sorted)
 ## Exercise 2
 
-...
-
+animals_kanga_rat <- filter(animals,
+                              species_id=='RO')
+animals_kanga_rat <- select(animals_kanga_rat, -year, -day,-month, -hindfoot_length)
+animals_kanga_rat <- select(animals_kanga_rat, id, sex, weight)
 ## Chainning with pipes
 
 sorted_pipe <- animals %>%
